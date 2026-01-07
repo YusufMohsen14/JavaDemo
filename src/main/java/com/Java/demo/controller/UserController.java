@@ -1,6 +1,6 @@
 package com.Java.demo.controller;
 
-import com.Java.demo.model.dto.UserDTO;
+import com.Java.demo.model.dto.Requests.CreateUserDTO;
 import com.Java.demo.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +15,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public String addUser(@RequestBody UserDTO userDTO) {
+    public String addUser(@RequestBody CreateUserDTO createUserDTO) {
         try {
-            userService.createUser(userDTO);
+            userService.createUser(createUserDTO);
         }catch (IllegalArgumentException e){
             return "Error: " + e.getMessage();
         }

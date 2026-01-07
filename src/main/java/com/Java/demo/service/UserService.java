@@ -1,14 +1,12 @@
 package com.Java.demo.service;
 
-import com.Java.demo.model.dto.UserDTO;
+import com.Java.demo.model.dto.Requests.CreateUserDTO;
 import com.Java.demo.model.entity.User;
 import com.Java.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,13 +15,13 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User createUser(UserDTO userDTO) {
+    public User createUser(CreateUserDTO createUserDTO) {
         User newUser = new User();
-        newUser.setFirstName(userDTO.getFirstName());
-        newUser.setLastName(userDTO.getLastName());
-        newUser.setEmail(userDTO.getEmail());
-        newUser.setPassword(userDTO.getPassword());
-        newUser.setBirthDate(userDTO.getBirthDate());
+        newUser.setFirstName(createUserDTO.getFirstName());
+        newUser.setLastName(createUserDTO.getLastName());
+        newUser.setEmail(createUserDTO.getEmail());
+        newUser.setPassword(createUserDTO.getPassword());
+        newUser.setBirthDate(createUserDTO.getBirthDate());
         newUser.setCreatedAt(Instant.now());
         newUser.setUpdatedAt(Instant.now());
         newUser.setRefreshToken("been here");
