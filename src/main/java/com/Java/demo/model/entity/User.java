@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Setter
 @Getter
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
 
@@ -29,7 +29,7 @@ public class User {
     private String lastName;
 
     @Column(nullable=false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable=false, length = 255)
     private String password;

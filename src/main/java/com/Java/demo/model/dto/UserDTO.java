@@ -1,18 +1,16 @@
 package com.Java.demo.model.dto;
 
+import lombok.Getter;
+
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 
+@Getter
 public class UserDTO {
-
-    private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private Date birthDate;
-
-    // Optional fields depending on use case
-    private Instant createdAt;
-    private Instant updatedAt;
+    private String password;
+    private LocalDate birthDate;
 
 }

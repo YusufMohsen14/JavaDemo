@@ -1,30 +1,34 @@
 package com.Java.demo.service;
 
+import com.Java.demo.model.dto.UserDTO;
 import com.Java.demo.model.entity.User;
 import com.Java.demo.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    //dependency injection
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public User createUser(String firstName, String lastName, String email, Date birthDate, String password){
+    public User createUser(UserDTO userDTO) {
         User newUser = new User();
-        newUser.setFirstName(firstName);
-        newUser.setLastName(lastName);
-        newUser.setEmail(email);
-        newUser.setBirthDate(birthDate);
+        newUser.setFirstName(userDTO.getFirstName());
+        newUser.setLastName(userDTO.getLastName());
+        newUser.setEmail(userDTO.getEmail());
+        newUser.setPassword(userDTO.getPassword());
+        newUser.setBirthDate(userDTO.getBirthDate());
+        newUser.setCreatedAt(Instant.now());
+        newUser.setUpdatedAt(Instant.now());
+        newUser.setRefreshToken("been here");
 
-        newUser.setCreatedAt(java.time.Instant.now());
+
         return userRepository.save(newUser);
     }
 
