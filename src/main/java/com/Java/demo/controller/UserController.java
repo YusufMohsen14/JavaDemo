@@ -1,6 +1,8 @@
 package com.Java.demo.controller;
 
+import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.model.dto.Requests.CreateUserDTO;
+import com.Java.demo.model.dto.Responses.UserLoginDTO;
 import com.Java.demo.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,14 +18,10 @@ public class UserController {
 
     @PostMapping()
     public String addUser(@RequestBody CreateUserDTO createUserDTO) {
-        try {
-            userService.createUser(createUserDTO);
-        }catch (IllegalArgumentException e){
-            return "Error: " + e.getMessage();
-        }
-
+        userService.createUser(createUserDTO);
         return "User created successfully";
     }
+
 
 
 

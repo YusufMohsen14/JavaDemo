@@ -1,5 +1,7 @@
 package com.Java.demo.service;
 
+import com.Java.demo.exception.customException.LoginAuthenticationException;
+import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.model.dto.Requests.CreateUserDTO;
 import com.Java.demo.model.entity.User;
 import com.Java.demo.repository.UserRepository;
@@ -16,6 +18,11 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User createUser(CreateUserDTO createUserDTO) {
+
+        List<User> existUsers = userRepository.findByEmail(createUserDTO.getEmail());
+        if (!existUsers.isEmpty()) {
+            throw new ResourceExistException("User with email " + createUserDTO.getEmail() + " already exists.");
+        }
         User newUser = new User();
         newUser.setFirstName(createUserDTO.getFirstName());
         newUser.setLastName(createUserDTO.getLastName());
@@ -26,30 +33,7 @@ public class UserService {
         newUser.setUpdatedAt(Instant.now());
         newUser.setRefreshToken("been here");
 
-
         return userRepository.save(newUser);
-    }
-
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public User getUserById(Long id){
-        return userRepository.findById(id).orElse(null);
-    }
-
-    public Boolean deleteUserById(Long id){
-        if (userRepository.existsById(id)){
-            userRepository.deleteById(id);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public long countUsers(){
-        return userRepository.count();
     }
 
 }
