@@ -1,11 +1,9 @@
 package com.Java.demo.model.dto.Requests;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Column;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Getter
@@ -16,5 +14,8 @@ public class CreateUserDTO {
     private String email;
     private String password;
     private LocalDate birthDate;
+    private String country;
+    private String city;
+    private String phoneNumber;
 
 }

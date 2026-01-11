@@ -26,15 +26,13 @@ public class UserContact {
     @Column(nullable = false, length = 255)
     private String city;
 
-    @Column(name = "phone_number", length = 255)
+    @Column(nullable = false, unique = true, length = 255)
     private String phoneNumber;
 
-
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable=false)
     private Instant createdAt;
 
-
-    @Column(name = "updated_at", nullable = false)
+    @Column(nullable=false)
     private Instant updatedAt;
 
 }
