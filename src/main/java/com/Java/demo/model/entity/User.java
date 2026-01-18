@@ -2,18 +2,21 @@ package com.Java.demo.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
+@Data
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
-
-public class User {
+public class User{
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserContact contact;
@@ -53,9 +56,11 @@ public class User {
     @Column(length = 255)
     private String refreshToken;
 
+    @CreationTimestamp
     @Column(nullable=false)
     private Instant createdAt;
 
+    @UpdateTimestamp
     @Column(nullable=false)
     private Instant updatedAt;
 }

@@ -1,5 +1,6 @@
 package com.Java.demo.service;
 
+
 import com.Java.demo.exception.customException.LoginAuthenticationException;
 import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.model.dto.Requests.CreateUserDTO;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
 
     public void createUser(CreateUserDTO createUserDTO) {
 
