@@ -19,6 +19,7 @@ public class UserController {
     @PostMapping("/register")
     public String addUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         userService.createUser(createUserDTO);
+
         return "User created successfully";
     }
 
@@ -26,7 +27,7 @@ public class UserController {
     public String login(@Valid @RequestBody UserLoginDTO dto) {
         User user = userService.loginUser(dto);
         String token = jwtService.generateToken(user);
-        return "You logged in successfully!";
+        return token;
     }
 
 }
