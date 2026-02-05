@@ -1,7 +1,6 @@
-package com.Java.demo.service;
+package com.Java.demo.configuration;
 
 import com.Java.demo.model.entity.User;
-import com.fasterxml.jackson.databind.DatabindException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,14 +12,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
 @AllArgsConstructor
+@Service
 public class JWTService {
 
-    public class JwtService {
-
-        private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // secret key
-        private final long expirationMs = 1000 * 60 * 60 * 24; // 24 hours
+        private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        private final long expirationMs = 1000 * 60 * 60 * 24;
 
         public String generateToken(User user) {
 
@@ -37,6 +34,3 @@ public class JWTService {
                     .compact();
         }
     }
-
-
-}

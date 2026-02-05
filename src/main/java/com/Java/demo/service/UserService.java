@@ -1,6 +1,7 @@
 package com.Java.demo.service;
 
 
+import com.Java.demo.configuration.JWTService;
 import com.Java.demo.exception.customException.LoginAuthenticationException;
 import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.model.dto.Requests.CreateUserDTO;
@@ -43,12 +44,7 @@ public class UserService {
         newUser.setRefreshToken("been here");
 
         UserContact userContact = new UserContact();
-        userContact.setUser(newUser);
-        userContact.setCountry(createUserDTO.getCountry());
-        userContact.setCity(createUserDTO.getCity());
-        userContact.setPhoneNumber(createUserDTO.getPhoneNumber());
-        userContact.setCreatedAt(Instant.now());
-        userContact.setUpdatedAt(Instant.now());
+        setUserContact(createUserDTO, newUser, userContact);
 
         newUser.setContact(userContact);
         userRepository.save(newUser);
@@ -61,5 +57,14 @@ public class UserService {
             throw new LoginAuthenticationException("Invalid email or password");
         }
         return user;
+    }
+
+    public void setUserContact(CreateUserDTO createUserDTO, User user, UserContact userContact){
+        userContact.setUser(user);
+        userContact.setCountry(createUserDTO.getCountry());
+        userContact.setCity(createUserDTO.getCity());
+        userContact.setPhoneNumber(createUserDTO.getPhoneNumber());
+        userContact.setCreatedAt(Instant.now());
+        userContact.setUpdatedAt(Instant.now());
     }
 }

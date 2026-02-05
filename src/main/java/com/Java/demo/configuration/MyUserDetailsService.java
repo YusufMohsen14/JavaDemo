@@ -1,4 +1,4 @@
-package com.Java.demo.service;
+package com.Java.demo.configuration;
 
 import com.Java.demo.model.entity.User;
 import com.Java.demo.model.entity.UserPrincipal;
@@ -8,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
