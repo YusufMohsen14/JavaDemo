@@ -1,5 +1,6 @@
 package com.Java.demo.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -18,8 +19,10 @@ import java.time.LocalDate;
 @Table(name = "users")
 public class User{
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private UserContact contact;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

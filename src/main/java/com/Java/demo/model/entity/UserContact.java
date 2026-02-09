@@ -1,5 +1,6 @@
 package com.Java.demo.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +17,9 @@ public class UserContact {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonBackReference
     private User user;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
