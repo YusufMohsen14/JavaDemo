@@ -1,4 +1,4 @@
-package com.Java.demo.model.dto.Response;
+package com.Java.demo.model.dto.Responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

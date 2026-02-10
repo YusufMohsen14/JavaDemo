@@ -1,13 +1,12 @@
 package com.Java.demo.controller;
 
-import com.Java.demo.model.dto.Requests.CreateUserDTO;
 import com.Java.demo.model.dto.Requests.RefreshTokenRequestDTO;
 import com.Java.demo.model.dto.Requests.UserLoginDTO;
 import com.Java.demo.model.dto.Requests.UserRequestDTO;
-import com.Java.demo.model.dto.Response.LoginResponseDTO;
-import com.Java.demo.model.dto.Response.RefreshTokenResponseDTO;
-import com.Java.demo.model.dto.Responses.UserDto;
-import com.Java.demo.model.entity.User;
+import com.Java.demo.model.dto.Requests.UserUpdateRequestDTO;
+import com.Java.demo.model.dto.Responses.LoginResponseDTO;
+import com.Java.demo.model.dto.Responses.RefreshTokenResponseDTO;
+import com.Java.demo.model.dto.Responses.UserResponseDto;
 import com.Java.demo.security.JWTUtil;
 import com.Java.demo.service.UserService;
 import jakarta.validation.Valid;
@@ -27,8 +26,8 @@ public class UserController {
     private final JWTUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody CreateUserDTO createUserDTO) {
-        userService.createUser(createUserDTO);
+    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+        userService.createUser(userRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "User created successfully"));
     }
@@ -47,39 +46,21 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUsers() {
-        try {
-            List<UserDto> users = userService.getAllUsers();
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@RequestParam long id) {
-        try {
-            userService.deleteById(id);
-            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<Map<String, String>> deleteById(@PathVariable long id) {
+        userService.deleteById(id);
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody UserRequestDTO userRequestDTO) {
-        try {
-            UserDto userDto = userService.updateUser(userRequestDTO);
-            return ResponseEntity.ok(userDto);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable long id, @Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        UserResponseDto updatedUser = userService.updateUser(id, userUpdateRequestDTO);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }
