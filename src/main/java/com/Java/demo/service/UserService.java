@@ -4,6 +4,9 @@ import com.Java.demo.exception.customException.InvalidTokenException;
 import com.Java.demo.exception.customException.LoginAuthenticationException;
 import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.exception.customException.ResourceNotFoundException;
+import com.Java.demo.mapper.UserContactMapper;
+import com.Java.demo.mapper.UserCreateMapper;
+import com.Java.demo.mapper.UserUpdateMapper;
 import com.Java.demo.model.dto.Requests.UserLoginDTO;
 import com.Java.demo.model.dto.Requests.UserRequestDTO;
 import com.Java.demo.model.dto.Requests.UserUpdateRequestDTO;
@@ -33,33 +36,28 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserContactRepository userContactRepository;
     private final JWTUtil jwtUtil;
+    private final UserCreateMapper userCreateMapper;
+    private final UserUpdateMapper userUpdateMapper;
+    private final UserContactMapper userContactMapper;
 
     public void createUser(@Valid UserRequestDTO userRequestDTO) {
         Optional<User> existUsers = userRepository.findByEmail(userRequestDTO.getEmail());
         if (existUsers.isPresent()) {
             throw new ResourceExistException("User with email " + userRequestDTO.getEmail() + " already exists.");
         }
-        User newUser = new User();
-        newUser.setFirstName(userRequestDTO.getFirstName());
-        newUser.setLastName(userRequestDTO.getLastName());
-        newUser.setEmail(userRequestDTO.getEmail());
+        User newUser = userCreateMapper.toUser(userRequestDTO);
 
         newUser.setRawPassword(userRequestDTO.getPassword());
         newUser.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-
-        newUser.setBirthDate(userRequestDTO.getBirthDate());
-        newUser.setCreatedAt(Instant.now());
-        newUser.setUpdatedAt(Instant.now());
-
         newUser.setRefreshToken(jwtUtil.generateRefreshToken(newUser));
 
-        UserContact userContact = new UserContact();
-        setUserContact(userRequestDTO, newUser, userContact);
+        if (userRequestDTO.getContact() != null) {
+            UserContact userContact = userContactMapper.toUser(userRequestDTO.getContact());
+            userContact.setUser(newUser);
+            newUser.setContact(userContact);
+        }
 
-        newUser.setContact(userContact);
         userRepository.save(newUser);
-        userContactRepository.save(userContact);
-
     }
 
     public LoginResponseDTO loginUser(UserLoginDTO dto) {
@@ -171,25 +169,15 @@ public class UserService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User with id " + id + " not found."));
 
-        user.setFirstName(userUpdateRequestDTO.getFirstName());
-        user.setLastName(userUpdateRequestDTO.getLastName());
-        user.setEmail(userUpdateRequestDTO.getEmail());
-        user.setBirthDate(userUpdateRequestDTO.getBirthDate());
-        user.setUpdatedAt(Instant.now());
-
-//        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-//            user.setPassword(passwordEncoder.encode(dto.getPassword()));
-//        }
-
-        UserContact userContact = user.getContact();
-        if (userContact == null) {
-            throw new ResourceNotFoundException("User contact not found for user id " + id);
-        }
-
+        userUpdateMapper.updateUser(userUpdateRequestDTO, user);
         if (userUpdateRequestDTO.getContact() != null) {
-            setUserContact(userUpdateRequestDTO, user, userContact);
+            UserContact contact = user.getContact();
+            if (contact == null) {
+                throw new ResourceNotFoundException(
+                        "User contact not found for user id " + id);
+            }
+            userUpdateMapper.updateUserContact(userUpdateRequestDTO.getContact(), contact);
         }
-
         User updatedUser = userRepository.save(user);
         return UserResponseDto.builder()
                 .id(updatedUser.getId())
@@ -199,24 +187,6 @@ public class UserService {
                 .contact(updatedUser.getContact())
                 .build();
     }
-
-    public void setUserContact(UserRequestDTO userRequestDTO, User user, UserContact userContact){
-        userContact.setUser(user);
-        userContact.setCountry(userRequestDTO.getContact().getCountry());
-        userContact.setCity(userRequestDTO.getContact().getCity());
-        userContact.setPhoneNumber(userRequestDTO.getContact().getPhoneNumber());
-        userContact.setCreatedAt(Instant.now());
-        userContact.setUpdatedAt(Instant.now());
-    }
-
-    public void setUserContact(UserUpdateRequestDTO userUpdateRequestDTO, User user, UserContact userContact){
-        userContact.setUser(user);
-        userContact.setCountry(userUpdateRequestDTO.getContact().getCountry());
-        userContact.setCity(userUpdateRequestDTO.getContact().getCity());
-        userContact.setPhoneNumber(userUpdateRequestDTO.getContact().getPhoneNumber());
-        userContact.setUpdatedAt(Instant.now());
-    }
-
 
 }
 
