@@ -1,5 +1,6 @@
 package com.Java.demo.service;
 
+import com.Java.demo.enums.Role;
 import com.Java.demo.exception.customException.InvalidTokenException;
 import com.Java.demo.exception.customException.LoginAuthenticationException;
 import com.Java.demo.exception.customException.ResourceExistException;
@@ -50,6 +51,7 @@ public class UserService {
         newUser.setRawPassword(userRequestDTO.getPassword());
         newUser.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         newUser.setRefreshToken(jwtUtil.generateRefreshToken(newUser));
+        newUser.setRole(Role.valueOf("USER"));
 
         if (userRequestDTO.getContact() != null) {
             UserContact userContact = userContactMapper.toUser(userRequestDTO.getContact());
@@ -188,5 +190,11 @@ public class UserService {
                 .build();
     }
 
+
+//    public Void changePassword(String Email){
+//        User user = userRepository.findByEmail(Email)
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + Email));
+//
+//    }
 }
 

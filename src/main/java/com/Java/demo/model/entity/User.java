@@ -1,5 +1,6 @@
 package com.Java.demo.model.entity;
 
+import com.Java.demo.enums.Role;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -57,4 +58,8 @@ public class User{
     @UpdateTimestamp
     @Column(nullable=false)
     private Instant updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 }

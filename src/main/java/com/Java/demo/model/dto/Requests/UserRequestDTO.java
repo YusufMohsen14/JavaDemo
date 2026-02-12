@@ -1,5 +1,6 @@
 package com.Java.demo.model.dto.Requests;
 
+import com.Java.demo.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
