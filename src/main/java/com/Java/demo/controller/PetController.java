@@ -1,7 +1,8 @@
 package com.Java.demo.controller;
 
 import com.Java.demo.mapper.PetMapper;
-import com.Java.demo.model.dto.Requests.PetDTO;
+import com.Java.demo.model.dto.Requests.PetRequestDTO;
+import com.Java.demo.model.dto.Responses.PetResponseDTO;
 import com.Java.demo.model.entity.Pet;
 import com.Java.demo.service.PetService;
 import jakarta.validation.Valid;
@@ -21,33 +22,20 @@ public class PetController {
     private final PetService petService;
     private final PetMapper petMapper;
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<Pet> createPet(@PathVariable Long userId, @Valid @RequestBody PetDTO petDTO) {
+    @PostMapping("/users/{userId}/pets")
+    public ResponseEntity<PetResponseDTO> createPet(@PathVariable Long userId, @Valid @RequestBody PetRequestDTO request) {
 
-        Pet pet = petMapper.toPet(petDTO);
+        Pet pet = petMapper.toPet(request);
         Pet savedPet = petService.addPet(userId, pet);
 
-        return ResponseEntity.ok(savedPet);
-    }
+        PetResponseDTO response = new PetResponseDTO(
+                savedPet.getId(),
+                savedPet.getName(),
+                savedPet.getBirthDate(),
+                savedPet.getType(),
+                savedPet.getCreatedAt()
+        );
 
-    @GetMapping("/{petId}")
-    public ResponseEntity<Pet> getPetById(@PathVariable Long petId) {
-        return ResponseEntity.ok(petService.getPetById(petId));
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Pet>> getPetsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(petService.getPetsByUser(userId));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Pet>> getAllPets() {
-        return ResponseEntity.ok(petService.getAllPets());
-    }
-
-    @DeleteMapping("/{petId}")
-    public ResponseEntity<Void> deletePet(@PathVariable Long petId) {
-        petService.deletePetById(petId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
