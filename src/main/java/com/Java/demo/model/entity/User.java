@@ -13,8 +13,6 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
