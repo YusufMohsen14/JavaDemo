@@ -14,6 +14,8 @@ public class PetResponseDTO {
     private String name;
     private LocalDate birthDate;
     private PetType type;
+    private Long userId;
     private Instant createdAt;
+    private Instant updatedAt;
 }
 

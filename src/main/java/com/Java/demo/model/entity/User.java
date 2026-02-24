@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Table(name = "users")
 public class User{
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private UserContact contact;
 

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/pets")
@@ -20,22 +19,26 @@ import java.util.Map;
 public class PetController {
 
     private final PetService petService;
-    private final PetMapper petMapper;
 
-    @PostMapping("/users/{userId}/pets")
-    public ResponseEntity<PetResponseDTO> createPet(@PathVariable Long userId, @Valid @RequestBody PetRequestDTO request) {
-
-        Pet pet = petMapper.toPet(request);
-        Pet savedPet = petService.addPet(userId, pet);
-
-        PetResponseDTO response = new PetResponseDTO(
-                savedPet.getId(),
-                savedPet.getName(),
-                savedPet.getBirthDate(),
-                savedPet.getType(),
-                savedPet.getCreatedAt()
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    @PostMapping
+    public ResponseEntity<PetResponseDTO> createPet(@RequestBody @Valid PetRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(petService.createPet(request));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PetResponseDTO> updatePet(@PathVariable Long id, @RequestBody @Valid PetRequestDTO request) {
+        return ResponseEntity.ok(petService.updatePet(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePet(@PathVariable Long id) {
+        petService.deletePet(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PetResponseDTO>> getAllPets() {
+        return ResponseEntity.ok(petService.getAllPets());
+    }
+
 }

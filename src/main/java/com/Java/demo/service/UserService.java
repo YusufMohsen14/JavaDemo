@@ -5,9 +5,7 @@ import com.Java.demo.exception.customException.InvalidTokenException;
 import com.Java.demo.exception.customException.LoginAuthenticationException;
 import com.Java.demo.exception.customException.ResourceExistException;
 import com.Java.demo.exception.customException.ResourceNotFoundException;
-import com.Java.demo.mapper.UserContactMapper;
-import com.Java.demo.mapper.UserCreateMapper;
-import com.Java.demo.mapper.UserUpdateMapper;
+import com.Java.demo.mapper.UserMapper;
 import com.Java.demo.model.dto.Requests.UserLoginDTO;
 import com.Java.demo.model.dto.Requests.UserRequestDTO;
 import com.Java.demo.model.dto.Requests.UserUpdateRequestDTO;
@@ -21,9 +19,11 @@ import com.Java.demo.repository.UserRepository;
 import com.Java.demo.security.JWTUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,16 +37,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserContactRepository userContactRepository;
     private final JWTUtil jwtUtil;
-    private final UserCreateMapper userCreateMapper;
-    private final UserUpdateMapper userUpdateMapper;
-    private final UserContactMapper userContactMapper;
+    private final UserMapper userMapper;
 
+    @Transactional
     public void createUser(@Valid UserRequestDTO userRequestDTO) {
         Optional<User> existUsers = userRepository.findByEmail(userRequestDTO.getEmail());
         if (existUsers.isPresent()) {
             throw new ResourceExistException("User with email " + userRequestDTO.getEmail() + " already exists.");
         }
-        User newUser = userCreateMapper.toUser(userRequestDTO);
+        User newUser = userMapper.toUser(userRequestDTO);
 
         newUser.setRawPassword(userRequestDTO.getPassword());
         newUser.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
@@ -54,9 +53,11 @@ public class UserService {
         newUser.setRole(Role.valueOf("USER"));
 
         if (userRequestDTO.getContact() != null) {
-            UserContact userContact = userContactMapper.toUser(userRequestDTO.getContact());
-            userContact.setUser(newUser);
-            newUser.setContact(userContact);
+            UserContact userContact = userMapper.toUserContact(userRequestDTO.getContact());
+            if (userContact != null) {
+                userContact.setUser(newUser);
+                newUser.setContact(userContact);
+            }
         }
 
         userRepository.save(newUser);
@@ -143,21 +144,23 @@ public class UserService {
     }
 
     public List<UserResponseDto> getAllUsers() {
-        List<User> allUsers =  userRepository.findAll();
-        return allUsers.stream().map(user -> {
-            UserContact userContact = userContactRepository.findByUserId(user.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User contact not found for user id: " + user.getId()));
-
-            return UserResponseDto.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .contact(userContact)
-                    .build();
-        }).toList();
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    if (user.getContact() == null) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User contact not found for user id: " + user.getId());
+                    }
+                    return UserResponseDto.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .contact(user.getContact())
+                            .build();
+                })
+                .toList();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id " + id);
@@ -171,14 +174,14 @@ public class UserService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User with id " + id + " not found."));
 
-        userUpdateMapper.updateUser(userUpdateRequestDTO, user);
+        userMapper.updateUser(userUpdateRequestDTO, user);
         if (userUpdateRequestDTO.getContact() != null) {
             UserContact contact = user.getContact();
             if (contact == null) {
                 throw new ResourceNotFoundException(
                         "User contact not found for user id " + id);
             }
-            userUpdateMapper.updateUserContact(userUpdateRequestDTO.getContact(), contact);
+            userMapper.updateUserContact(userUpdateRequestDTO.getContact(), contact);
         }
         User updatedUser = userRepository.save(user);
         return UserResponseDto.builder()
@@ -189,12 +192,4 @@ public class UserService {
                 .contact(updatedUser.getContact())
                 .build();
     }
-
-
-//    public Void changePassword(String Email){
-//        User user = userRepository.findByEmail(Email)
-//                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + Email));
-//
-//    }
 }
-
